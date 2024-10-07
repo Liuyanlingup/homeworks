@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>确认点名</title>
+</head>
+<body>
+<form method="post">
+    {% csrf_token %}
+    <h2>确认点名学生:</h2>
+    <p>姓名: {{ student.name }}</p>
+    <p>学号: {{ student.student_id }}</p>
+
+    <label for="attended">是否到达课堂:</label>
+    <input type="checkbox" name="attended" id="attended">
+
+    <label for="question_repeat">是否准确重复问题:</label>
+    <select name="question_repeat" id="question_repeat">
+        <option value="inaccurate">不准确</option>
+        <option value="accurate">准确</option>
+    </select>
+
+    <label for="answer_accuracy">回答问题准确性:</label>
+    <select name="answer_accuracy" id="answer_accuracy">
+        <option value="0">0分 - 未回答准确</option>
+        <option value="0.5">0.5分 - 回答部分正确</option>
+        <option value="1.5">1.5分 - 回答大部分正确</option>
+        <option value="3">3分 - 完全正确</option>
+    </select>
+
+    <button type="submit">确认并提交</button>
+</form>
+
+</body>
+</html>
