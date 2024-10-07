@@ -4,6 +4,8 @@ from .models import *
 from django.shortcuts import render, redirect, get_object_or_404
 import random
 import pandas as pd
+from django.db.models import Window, F
+from django.db.models.functions import Rank
 # 导入表单
 from .forms import UploadFileForm
 # Create your views here.
@@ -101,3 +103,10 @@ def confirm_roll_call(request):
         return redirect('roll_call')  # 返回点名页面，进行下一轮点名
 
     return render(request, 'confirm_roll_call.html', {'student': student})  # 渲染确认点名页面
+
+# 积分排行榜
+def leaderboard(request):
+    students = Student.objects.all().order_by('-score')  # 按分数降序排列
+    return render(request, 'leaderboard.html', {'students': students})
+
+
