@@ -17,6 +17,8 @@ class Student(models.Model):
     student_id = models.CharField(max_length=100, unique=True)  # 学号设为唯一
     score = models.FloatField(default=0)  # 积分允许为小数
     attendance_count = models.IntegerField(default=0)  # 到课次数
+    called_count = models.IntegerField(default=0)  # 被点名次数
+    # protected = models.BooleanField(default=False)  # 是否有保护权
 
     def __str__(self):
         return self.name

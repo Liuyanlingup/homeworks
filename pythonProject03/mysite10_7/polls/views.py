@@ -76,37 +76,76 @@ def roll_call(request):
     return render(request, 'roll_call.html', {'selected_student': selected_student})  # 渲染点名页面
 
 # 确认点名的视图
+# def confirm_roll_call(request):
+#     # 从 session 中获取被点名的学生
+#     student_id = request.session.get('selected_student_id')
+#     student = get_object_or_404(Student, student_id=student_id)
+#
+#     if request.method == 'POST':
+#         # 学生是否到课
+#         if 'attended' in request.POST:  # 如果选择了到课
+#             student.score += 1  # 到课加1分
+#             student.attendance_count += 1  # 到课次数加1
+#
+#             # 处理是否准确重复问题
+#             if request.POST['question_repeat'] == 'accurate':
+#                 student.score += 0.5  # 重复问题准确，加0.5分
+#             else:
+#                 student.score -= 1  # 重复问题不准确，扣1分
+#
+#             # 处理回答问题的准确性（0-3分）
+#             answer_accuracy = float(request.POST.get('answer_accuracy', 0))
+#             student.score += answer_accuracy  # 根据回答准确性加分
+#         else:
+#             student.score -= 5  # 未到课扣5分
+#
+#         student.save()  # 保存更新后的学生信息
+#         return redirect('roll_call')  # 返回点名页面，进行下一轮点名
+#
+#     return render(request, 'confirm_roll_call.html', {'student': student})  # 渲染确认点名页面
 def confirm_roll_call(request):
-    # 从 session 中获取被点名的学生
     student_id = request.session.get('selected_student_id')
     student = get_object_or_404(Student, student_id=student_id)
+    protection_awarded = False  # 初始化保护权标志
 
     if request.method == 'POST':
-        # 学生是否到课
-        if 'attended' in request.POST:  # 如果选择了到课
-            student.score += 1  # 到课加1分
-            student.attendance_count += 1  # 到课次数加1
+        # 增加学生的被点名次数
+        student.called_count += 1
 
-            # 处理是否准确重复问题
-            if request.POST['question_repeat'] == 'accurate':
-                student.score += 0.5  # 重复问题准确，加0.5分
-            else:
-                student.score -= 1  # 重复问题不准确，扣1分
-
-            # 处理回答问题的准确性（0-3分）
-            answer_accuracy = float(request.POST.get('answer_accuracy', 0))
-            student.score += answer_accuracy  # 根据回答准确性加分
+        # 检查学生是否有“保护权”
+        if student.called_count % 3 == 0:
+            # 如果被点名次数是3的倍数，赋予保护权，自动加2分
+            student.score += 2
+            protection_awarded = True  # 设置保护权标志
+            print(f"Student {student.name} ({student.student_id})获得保护权，自动加2分")
         else:
-            student.score -= 5  # 未到课扣5分
+            # 学生是否到课
+            if 'attended' in request.POST:  # 如果选择了到课
+                student.score += 1  # 到课加1分
+                student.attendance_count += 1  # 到课次数加1
 
-        student.save()  # 保存更新后的学生信息
+                # 处理是否准确重复问题
+                if request.POST['question_repeat'] == 'accurate':
+                    student.score += 0.5  # 重复问题准确，加0.5分
+                else:
+                    student.score -= 1  # 重复问题不准确，扣1分
+
+                # 处理回答问题的准确性（0-3分）
+                answer_accuracy = float(request.POST.get('answer_accuracy', 0))
+                student.score += answer_accuracy  # 根据回答准确性加分
+            else:
+                student.score -= 5  # 未到课扣5分
+
+        # 保存更新后的学生信息
+        student.save()
         return redirect('roll_call')  # 返回点名页面，进行下一轮点名
 
-    return render(request, 'confirm_roll_call.html', {'student': student})  # 渲染确认点名页面
+    return render(request, 'confirm_roll_call.html', {'student': student, 'protection_awarded': protection_awarded})  # 渲染确认点名页面
+
+
+
 
 # 积分排行榜
 def leaderboard(request):
     students = Student.objects.all().order_by('-score')  # 按分数降序排列
     return render(request, 'leaderboard.html', {'students': students})
-
-

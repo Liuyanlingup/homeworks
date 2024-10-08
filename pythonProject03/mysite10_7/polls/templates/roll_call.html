@@ -1,3 +1,22 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>随机点名</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<form method="post">-->
+<!--    {% csrf_token %}-->
+<!--    <button type="submit" name="start_roll_call">开始点名</button>-->
+<!--</form>-->
+
+<!--{% if selected_student %}-->
+<!--    <h2>被选中的学生:</h2>-->
+<!--    <p>姓名: {{ selected_student.name }}</p>-->
+<!--    <p>学号: {{ selected_student.student_id }}</p>-->
+<!--{% endif %}-->
+<!--</body>-->
+<!--</html>-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,6 +33,14 @@
     <h2>被选中的学生:</h2>
     <p>姓名: {{ selected_student.name }}</p>
     <p>学号: {{ selected_student.student_id }}</p>
+    <p>当前积分: {{ selected_student.score }}</p>
+    <p>被点名次数: {{ selected_student.called_count }}</p>
+
+    <!-- 检查学生是否获得保护权 -->
+    {% if protection_awarded %}
+        <p style="color: green;">该学生已被点名 {{ selected_student.called_count }} 次，获得保护权！下次自动加2分。</p>
+    {% endif %}
 {% endif %}
 </body>
 </html>
+
